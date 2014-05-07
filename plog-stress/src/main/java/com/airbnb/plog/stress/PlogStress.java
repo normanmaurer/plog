@@ -61,7 +61,7 @@ public class PlogStress {
 
         final Fragmenter fragmenter = new Fragmenter(packetSize);
 
-        final Random random = new Random();
+        final Random random = new Random(stressConfig.getLong("seed"));
         final byte[] randomBytes = new byte[maxSize];
         random.nextBytes(randomBytes);
         final ByteBuf randomMessage = Unpooled.wrappedBuffer(randomBytes);
