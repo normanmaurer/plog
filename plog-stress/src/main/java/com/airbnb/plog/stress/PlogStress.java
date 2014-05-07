@@ -53,6 +53,8 @@ public class PlogStress {
 
         final int sizeDelta = maxSize - minSize;
         final int differentSizes = sizeDelta / sizeIncrements;
+        if (differentSizes == 0)
+            throw new RuntimeException("No sizes! Decrease plog.stress.size_increments");
 
         final int stopAfter = stressConfig.getInt("stop_after");
 
