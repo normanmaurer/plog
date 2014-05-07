@@ -16,7 +16,6 @@ import io.netty.buffer.Unpooled;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.net.StandardSocketOptions;
 import java.nio.channels.DatagramChannel;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -92,15 +91,15 @@ public class PlogStress {
 
         for (int i = 0; i < threadCount; i++) {
             new Thread("stress_" + i) {
-                private DatagramChannel socket;
+                private DatagramChannel channel;
 
                 @Override
                 public void run() {
                     try {
                         for (int sent = 0; sent < stopAfter; sent++, messageMeter.mark()) {
                             if (sent % socketRenewRate == 0) {
-                                socket = DatagramChannel.open();
-                                socket.setOption(StandardSocketOptions.SO_SNDBUF, bufferSize);
+                                channel = DatagramChannel.open();
+                                channel.socket().setSendBufferSize(bufferSize);
                                 socketMeter.mark();
                             }
 
@@ -120,7 +119,7 @@ public class PlogStress {
                                     lossMeter.mark();
                                 } else {
                                     final int packetSize = fragment.readableBytes();
-                                    socket.send(fragment.nioBuffer(), target);
+                                    channel.send(fragment.nioBuffer(), target);
 
                                     packetSizeHistogram.update(packetSize);
                                     packetMeter.mark();
